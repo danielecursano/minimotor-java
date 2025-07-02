@@ -11,14 +11,16 @@ import static java.lang.Thread.sleep;
 public class GameController {
     private GameMap gameMap;
     private View view;
+    private int numOfRoads;
 
     public GameController(View view) {
         this.gameMap = new GameMap();
+        this.numOfRoads = 10;
         this.view = view;
         new Thread(() -> {
             while (true) {
                 try {
-                    sleep(1_000);
+                    sleep(100);
                     gameMap.moveCar();
                     updateGame(State.PLAY);
                 } catch (InterruptedException e) {
@@ -32,6 +34,7 @@ public class GameController {
                     RandomGenerator.Result gen = RandomGenerator.generateRandomPositionAndColor();
                     addDestination(gen.start, gen.color);
                     addHouse(gen.end, HouseType.HOUSE, gen.color);
+                    this.numOfRoads += 10;
                     updateGame(State.PLAY);
                     sleep(20_000);
                 } catch (InterruptedException e) {
@@ -42,8 +45,11 @@ public class GameController {
     }
 
     public void addRoad(int i) {
-        gameMap.addBuilding(i, new Road(i));
-        updateGame(State.PLAY);
+        if (numOfRoads > 0) {
+            gameMap.addBuilding(i, new Road(i));
+            updateGame(State.PLAY);
+            numOfRoads--;
+        }
     }
 
     private void addDestination(int i, Color color) {
@@ -56,9 +62,9 @@ public class GameController {
 
     public void updateGame(State state) {
         if (view instanceof FXView) {
-            javafx.application.Platform.runLater(() -> view.updateView(new GameState(gameMap.getBuildings(), gameMap.getCars(), state)));
+            javafx.application.Platform.runLater(() -> view.updateView(new GameState(gameMap.getBuildings(), gameMap.getCars(), state, gameMap.getScore(), numOfRoads)));
         } else {
-            view.updateView(new GameState(gameMap.getBuildings(), gameMap.getCars(), state));
+            view.updateView(new GameState(gameMap.getBuildings(), gameMap.getCars(), state, gameMap.getScore(), numOfRoads));
         }
     }
 

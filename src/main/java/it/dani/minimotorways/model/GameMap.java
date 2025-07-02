@@ -13,13 +13,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class GameMap {
-    private static final int ROWS = 10;
-    private static final int COLS = 10;
+    private static final int ROWS = 20;
+    private static final int COLS = 20;
     private static final int[] DIRS = {1, -1, COLS, -COLS};
     private static final EmptyCell EMPTY_CELL = new EmptyCell();
 
     private final Map<Integer, Building> buildings = new HashMap<>();
     private final Map<Integer, Car> cars = new HashMap<>();
+    private int score = 0;
 
     private static final Logger logger = Logger.getLogger(GameMap.class.getName());
     static {
@@ -40,6 +41,10 @@ public class GameMap {
 
     public GameMap() {
 
+    }
+
+    public int getScore() {
+        return score;
     }
 
     public static int getRows() {
@@ -109,31 +114,61 @@ public class GameMap {
         return false;
     }
 
-    /*
-    public void renderMap() {
-        for (int i = 0; i < ROWS; i++) {
-            for (int j = 0; j < COLS; j++) {
-                System.out.print(buildings.computeIfAbsent(i*ROWS+j, key -> EMPTY_CELL));
-            }
-            System.out.print("\n");
-        }
-    }
-    */
-
     public void moveCar() {
         PathVisitor pathVisitor = new PathVisitor();
-        for (int i = 0; i < ROWS*COLS; i++) {
+        for (int i = 0; i < ROWS * COLS; i++) {
             getBuildingAt(i).accept(pathVisitor);
         }
-        for (Map.Entry<Integer, Car> entry : cars.entrySet()) {
-            int nextStep = pathVisitor.getPath(entry.getKey(), entry.getValue().getColor());
+
+        Iterator<Map.Entry<Integer, Car>> iterator = cars.entrySet().iterator();
+        Map<Integer, Car> movedCars = new HashMap<>(); // To store cars that moved to new positions
+
+        while (iterator.hasNext()) {
+            Map.Entry<Integer, Car> entry = iterator.next();
+            int currentPos = entry.getKey();
+            Car car = entry.getValue();
+
+            int nextStep = pathVisitor.getPath(currentPos, car.getColor());
             if (nextStep != -1) {
-                Road road = (Road) getBuildingAt(nextStep);
-                road.setCar(entry.getValue());
-                road = (Road) getBuildingAt(nextStep);
-                road.free();
+                Building nextBuilding = getBuildingAt(nextStep);
+
+                if (nextBuilding instanceof Road) {
+                    Road nextRoad = (Road) nextBuilding;
+                    Road oldRoad = (Road) getBuildingAt(currentPos);
+
+                    // Move car to next road
+                    nextRoad.setCar(car);
+                    oldRoad.free();
+
+                    // Update matrix in pathVisitor
+                    pathVisitor.setOne(currentPos);  // Old road now free
+                    pathVisitor.setZero(nextStep);   // New road now occupied
+
+                    // Mark for position update after iteration
+                    movedCars.put(nextStep, car);
+
+                    // Remove old entry after iteration, do not remove here to avoid concurrent modification
+                    iterator.remove();
+
+                } else if (nextBuilding instanceof Destination) {
+                    // Car reached destination
+                    score += 1;
+
+                    // Free old road
+                    Road oldRoad = (Road) getBuildingAt(currentPos);
+                    oldRoad.free();
+
+                    // Update matrix in pathVisitor
+                    pathVisitor.setOne(currentPos);
+
+                    // Remove car safely while iterating
+                    iterator.remove();
+                }
             }
         }
+
+        // Add moved cars to map with updated positions after iteration
+        cars.putAll(movedCars);
     }
 
 }

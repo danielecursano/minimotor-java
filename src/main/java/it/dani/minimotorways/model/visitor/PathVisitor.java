@@ -105,4 +105,12 @@ public class PathVisitor implements Visitor {
     public void visit(Building building) {
 
     }
+
+    public void setZero(int i) {
+        matrix.set(i, 0);
+    }
+
+    public void setOne(int i) {
+        matrix.set(i, 1);
+    }
 }
