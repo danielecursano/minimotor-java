@@ -1,6 +1,7 @@
 package it.dani.minimotorways.model;
 
 import it.dani.minimotorways.model.building.*;
+import it.dani.minimotorways.model.visitor.PathVisitor;
 import it.dani.minimotorways.model.visitor.RoadVisitor;
 
 import java.io.IOException;
@@ -12,8 +13,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class GameMap {
-    private static final int ROWS = 64;
-    private static final int COLS = 64;
+    private static final int ROWS = 10;
+    private static final int COLS = 10;
     private static final int[] DIRS = {1, -1, COLS, -COLS};
     private static final EmptyCell EMPTY_CELL = new EmptyCell();
 
@@ -38,9 +39,7 @@ public class GameMap {
     }
 
     public GameMap() {
-        new Thread(()-> {
-            // move cars
-        }).start();
+
     }
 
     public static int getRows() {
@@ -51,6 +50,14 @@ public class GameMap {
         return COLS;
     }
 
+    public Map<Integer, Building> getBuildings() {
+        return buildings;
+    }
+
+    public Map<Integer, Car> getCars() {
+        return cars;
+    }
+
     public static boolean isPositionValid(int pos) {
         return pos >= 0 && pos < ROWS * COLS;
     }
@@ -59,24 +66,24 @@ public class GameMap {
         return DIRS;
     }
 
-    public Optional<Building> getBuildingAt(int pos) {
+    public Building getBuildingAt(int pos) {
         if (!isPositionValid(pos)) {
-            return Optional.empty();
+            return EMPTY_CELL;
         }
-        return Optional.ofNullable(buildings.get(pos));
+        return buildings.getOrDefault(pos, EMPTY_CELL);
     }
 
     private boolean canBuild(int pos) {
-        return !buildings.containsKey(pos) && isPositionValid(pos);
+        return (!buildings.containsKey(pos) || buildings.get(pos) instanceof EmptyCell)&& isPositionValid(pos);
     }
 
     public boolean addBuilding(int i, Building building) {
         if (canBuild(i)) {
             buildings.put(i, building);
-            logger.info("[GAME] add building at " + i);
+            logger.info(String.format("[GAME] add building %s at %d", building.getClass(), i));
             return true;
         }
-        logger.warning("[GAME] failed adding building at " + i);
+        logger.warning(String.format("[GAME] failed adding building %s at %d", building.getClass(), i));
         return false;
     }
 
@@ -102,6 +109,7 @@ public class GameMap {
         return false;
     }
 
+    /*
     public void renderMap() {
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLS; j++) {
@@ -110,9 +118,22 @@ public class GameMap {
             System.out.print("\n");
         }
     }
+    */
 
     public void moveCar() {
-
+        PathVisitor pathVisitor = new PathVisitor();
+        for (int i = 0; i < ROWS*COLS; i++) {
+            getBuildingAt(i).accept(pathVisitor);
+        }
+        for (Map.Entry<Integer, Car> entry : cars.entrySet()) {
+            int nextStep = pathVisitor.getPath(entry.getKey(), entry.getValue().getColor());
+            if (nextStep != -1) {
+                Road road = (Road) getBuildingAt(nextStep);
+                road.setCar(entry.getValue());
+                road = (Road) getBuildingAt(nextStep);
+                road.free();
+            }
+        }
     }
 
 }

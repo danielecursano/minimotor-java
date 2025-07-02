@@ -18,9 +18,7 @@ class GameMapTest {
         assertTrue(gameMap.addBuilding(4, new Destination(Color.RED, 4)));
         assertTrue(gameMap.addBuilding(3, new Road(3)));
         assertTrue(gameMap.addBuilding(11, new Road(11)));
-        gameMap.renderMap();
         sleep(6000);
-        gameMap.renderMap();
     }
 
 }

@@ -14,8 +14,7 @@ public class RoadVisitor implements Visitor {
     public RoadVisitor(int pos, GameMap gameMap) {
         roads = new HashSet<>();
         for (int dir: GameMap.getDirs()) {
-            Optional<Building> b = gameMap.getBuildingAt(pos+dir);
-            b.ifPresent(building -> building.accept(this));
+            gameMap.getBuildingAt(pos+dir).accept(this);
         }
     }
 

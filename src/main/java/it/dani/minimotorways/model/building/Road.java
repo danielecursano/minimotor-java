@@ -21,6 +21,10 @@ public class Road extends Building {
         this.car = Optional.of(car);
     }
 
+    public void free() {
+        this.car = Optional.empty();
+    }
+
     public String render() {
         return car.map(value -> Color.RESET.toString() + value.getColor() + "R").orElse("R");
     }
