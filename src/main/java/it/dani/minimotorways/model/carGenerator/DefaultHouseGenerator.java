@@ -11,7 +11,7 @@ public class DefaultHouseGenerator implements CarGeneratorStrategy {
             try {
                 while (true) {
                     Thread.sleep(5_000);
-                    gameMap.addCar(i, new Car(color));
+                    gameMap.addCar(i, color);
                 }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);

@@ -15,7 +15,7 @@ public class House extends Building {
     }
 
     public House(Color color, GameMap gameMap, CarGeneratorStrategy strategy, int pos) {
-        super(color);
+        super(color, pos);
         this.gameMap = gameMap;
         this.generatorStrategy = strategy;
         generatorStrategy.startGenerating(gameMap, getColor(), pos);

@@ -11,7 +11,7 @@ public class FastSkyscraperGenerator implements CarGeneratorStrategy {
             try {
                 while (true) {
                     Thread.sleep(2_500);
-                    gameMap.addCar(i, new Car(color));
+                    gameMap.addCar(i, color);
                 }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);

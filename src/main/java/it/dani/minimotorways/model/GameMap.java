@@ -18,6 +18,7 @@ public class GameMap {
     private static final EmptyCell EMPTY_CELL = new EmptyCell();
 
     private final Map<Integer, Building> buildings = new HashMap<>();
+    private final Map<Integer, Car> cars = new HashMap<>();
 
     private static final Logger logger = Logger.getLogger(GameMap.class.getName());
     static {
@@ -37,6 +38,17 @@ public class GameMap {
     }
 
     public GameMap() {
+        new Thread(()-> {
+            // move cars
+        }).start();
+    }
+
+    public static int getRows() {
+        return ROWS;
+    }
+
+    public static int getCols() {
+        return COLS;
     }
 
     public static boolean isPositionValid(int pos) {
@@ -77,14 +89,16 @@ public class GameMap {
         return true;
     }
 
-    public boolean addCar(int i, Car car) {
+    public boolean addCar(int i, Color carColor) {
         Set<Road> roads = new RoadVisitor(i, this).getRoads();
         for (Road road : roads) {
-            road.setCar(car);
+            Car newCar = new Car(carColor);
+            road.setCar(newCar);
             logger.info("[GAME] add car at road " + i);
+            cars.put(road.getPos(), newCar);
             return true;
         }
-        logger.warning("[GAME] failed adding car at road " + i + ". Roads found: " + roads.size());
+        logger.warning("[GAME] failed adding car at road " + i);
         return false;
     }
 
@@ -95,6 +109,10 @@ public class GameMap {
             }
             System.out.print("\n");
         }
+    }
+
+    public void moveCar() {
+
     }
 
 }

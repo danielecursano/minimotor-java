@@ -9,8 +9,8 @@ import java.util.Optional;
 public class Road extends Building {
     private Optional<Car> car = Optional.empty();
 
-    public Road() {
-        super(Color.BLACK);
+    public Road(int position) {
+        super(Color.BLACK, position);
     }
 
     public boolean isFree() {

@@ -5,7 +5,7 @@ import it.dani.minimotorways.model.visitor.Visitor;
 
 public class EmptyCell extends Building {
     public EmptyCell() {
-        super(Color.BLACK);
+        super(Color.BLACK, -1);
     }
 
     public String render() {
