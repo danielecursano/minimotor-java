@@ -3,6 +3,7 @@ package it.dani.minimotorways.controller;
 import it.dani.minimotorways.model.Color;
 import it.dani.minimotorways.model.GameMap;
 import it.dani.minimotorways.model.building.*;
+import it.dani.minimotorways.view.FXView;
 import it.dani.minimotorways.view.View;
 
 import static java.lang.Thread.sleep;
@@ -54,7 +55,11 @@ public class GameController {
     }
 
     public void updateGame(State state) {
-        view.updateView(new GameState(gameMap.getBuildings(), gameMap.getCars(), state));
+        if (view instanceof FXView) {
+            javafx.application.Platform.runLater(() -> view.updateView(new GameState(gameMap.getBuildings(), gameMap.getCars(), state)));
+        } else {
+            view.updateView(new GameState(gameMap.getBuildings(), gameMap.getCars(), state));
+        }
     }
 
 }

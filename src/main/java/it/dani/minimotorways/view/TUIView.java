@@ -13,6 +13,15 @@ public class TUIView extends View {
     static Building EMPTYCELL = new EmptyCell();
     static Scanner scanner = new Scanner(System.in);
 
+    public TUIView() {
+        super();
+        new Thread(() -> {
+            while (true) {
+                askInput();
+            }
+        }).start();
+    }
+
     @Override
     public void updateView(GameState game) {
         clearConsole();

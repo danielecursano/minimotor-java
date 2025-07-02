@@ -33,4 +33,8 @@ public class Road extends Building {
     public void accept(Visitor visitor) {
         visitor.visit(this);
     }
+
+    public Optional<Car> getCar() {
+        return car;
+    }
 }

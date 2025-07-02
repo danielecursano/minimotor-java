@@ -8,11 +8,6 @@ public abstract class View {
 
     public View() {
         this.gameController = new GameController(this);
-        new Thread(() -> {
-            while (true) {
-                askInput();
-            }
-        }).start();
     }
 
     public abstract void updateView(GameState game);
