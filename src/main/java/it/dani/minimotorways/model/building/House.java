@@ -1,9 +1,10 @@
-package it.dani.minimotorways.model;
+package it.dani.minimotorways.model.building;
 
+import it.dani.minimotorways.model.Color;
+import it.dani.minimotorways.model.GameMap;
 import it.dani.minimotorways.model.carGenerator.CarGeneratorStrategy;
 import it.dani.minimotorways.model.carGenerator.DefaultHouseGenerator;
-
-import static java.lang.Thread.sleep;
+import it.dani.minimotorways.model.visitor.Visitor;
 
 public class House extends Building {
     private final GameMap gameMap;
@@ -22,6 +23,11 @@ public class House extends Building {
 
     public String render() {
         return "H";
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 
 }

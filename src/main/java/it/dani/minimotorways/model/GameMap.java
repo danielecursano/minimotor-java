@@ -1,10 +1,10 @@
 package it.dani.minimotorways.model;
 
+import it.dani.minimotorways.model.building.*;
+import it.dani.minimotorways.model.visitor.RoadVisitor;
+
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -39,8 +39,19 @@ public class GameMap {
     public GameMap() {
     }
 
-    private static boolean isPositionValid(int pos) {
+    public static boolean isPositionValid(int pos) {
         return pos >= 0 && pos < ROWS * COLS;
+    }
+
+    public static int[] getDirs() {
+        return DIRS;
+    }
+
+    public Optional<Building> getBuildingAt(int pos) {
+        if (!isPositionValid(pos)) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(buildings.get(pos));
     }
 
     private boolean canBuild(int pos) {
@@ -67,21 +78,13 @@ public class GameMap {
     }
 
     public boolean addCar(int i, Car car) {
-        Set<Road> roads = new HashSet<>();
-        for (int dir: DIRS) {
-            if (isPositionValid(i+dir) && buildings.containsKey(i+dir) && buildings.get(i+dir) instanceof Road) {
-                roads.add((Road) buildings.get(i+dir));
-            }
-        }
-        logger.info("[GAME] roads found:" + roads.size());
+        Set<Road> roads = new RoadVisitor(i, this).getRoads();
         for (Road road : roads) {
-            if (road.isFree()) {
-                road.setCar(car);
-                logger.info("[GAME] add car at road " + i);
-                return true;
-            }
+            road.setCar(car);
+            logger.info("[GAME] add car at road " + i);
+            return true;
         }
-        logger.warning("[GAME] failed adding car at road " + i);
+        logger.warning("[GAME] failed adding car at road " + i + ". Roads found: " + roads.size());
         return false;
     }
 

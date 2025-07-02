@@ -1,4 +1,8 @@
-package it.dani.minimotorways.model;
+package it.dani.minimotorways.model.building;
+
+import it.dani.minimotorways.model.Car;
+import it.dani.minimotorways.model.Color;
+import it.dani.minimotorways.model.visitor.Visitor;
 
 import java.util.Optional;
 
@@ -19,5 +23,10 @@ public class Road extends Building {
 
     public String render() {
         return car.map(value -> Color.RESET.toString() + value.getColor() + "R").orElse("R");
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 }

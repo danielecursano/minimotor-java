@@ -1,5 +1,8 @@
 package it.dani.minimotorways.model;
 
+import it.dani.minimotorways.model.building.Destination;
+import it.dani.minimotorways.model.building.HouseType;
+import it.dani.minimotorways.model.building.Road;
 import org.junit.jupiter.api.Test;
 
 import static java.lang.Thread.sleep;

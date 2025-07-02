@@ -1,4 +1,7 @@
-package it.dani.minimotorways.model;
+package it.dani.minimotorways.model.building;
+
+import it.dani.minimotorways.model.Color;
+import it.dani.minimotorways.model.visitor.Visitor;
 
 public abstract class Building {
     private final Color color;
@@ -17,6 +20,8 @@ public abstract class Building {
     public String toString() {
         return color + render() + Color.RESET;
     }
+
+    public abstract void accept(Visitor visitor);
 
 }
 
