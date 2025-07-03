@@ -45,7 +45,9 @@ public class GameController {
                     }
                     response = false;
                     while (!response) {
-                        response = addHouse(gen.end, HouseType.HOUSE, gen.color);
+                        if (gen.houseType == HouseType.SKYSCRAPER)
+                            System.out.println("Skyscraper");
+                        response = addHouse(gen.end, gen.houseType, gen.color);
                     }
                     this.numOfRoads += 10;
                     updateGame(State.PLAY);

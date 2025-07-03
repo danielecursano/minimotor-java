@@ -153,35 +153,36 @@ public class FXView extends View {
         String text = ".";
         String color = "white";
 
-        if (building instanceof Road) {
+        // Check SkyScraper first because it extends House
+        if (building instanceof SkyScraper) {
+            text = "S";
+            color = convertColorToCss(building.getColor());
+            if (color == null) color = "#DAA520";  // golden color
+        } else if (building instanceof House) {
+            text = "H";
+            color = convertColorToCss(building.getColor());
+            if (color == null) color = "#FFD700";  // gold
+        } else if (building instanceof Road) {
             Road road = (Road) building;
             text = "R";
             Optional<Car> carOpt = road.getCar();
             if (carOpt.isPresent()) {
                 Color carColor = carOpt.get().getColor();
                 String cssColor = convertColorToCss(carColor);
-                color = (cssColor != null) ? cssColor : "#90ee90";
+                color = (cssColor != null) ? cssColor : "#90ee90"; // light green
             } else {
                 color = "#90ee90";
             }
         } else if (building instanceof Destination) {
             text = "D";
             color = convertColorToCss(building.getColor());
-            if (color == null) color = "#6495ED";
-        } else if (building instanceof House) {
-            text = "H";
-            color = convertColorToCss(building.getColor());
-            if (color == null) color = "#FFD700";
-        } else if (building instanceof SkyScraper) {
-            text = "S";
-            color = convertColorToCss(building.getColor());
-            if (color == null) color = "#DAA520";
+            if (color == null) color = "#6495ED";  // cornflower blue
         } else if (building instanceof EmptyCell) {
             text = ".";
             color = "white";
         } else {
             text = "?";
-            color = "#f08080";
+            color = "#f08080";  // light coral
             System.out.println("Unknown building type: " + building.getClass().getName());
         }
 
