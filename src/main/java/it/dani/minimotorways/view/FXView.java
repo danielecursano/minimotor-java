@@ -25,7 +25,7 @@ public class FXView extends View {
     private GridPane gridPane;
     private Label statusLabel;
     private Label scoreLabel;
-    private Label roadsLabel; // NEW: number of roads label
+    private Label roadsLabel;
     private final Map<Integer, Button> cellButtons = new HashMap<>();
 
     public void start(Stage primaryStage) {
@@ -40,11 +40,11 @@ public class FXView extends View {
         scoreLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
         roadsLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
-        HBox scoreBox = new HBox(15, scoreLabel, roadsLabel); // Added roadsLabel
+        HBox scoreBox = new HBox(15, scoreLabel, roadsLabel);
         scoreBox.setAlignment(Pos.CENTER_RIGHT);
         scoreBox.setMinHeight(30);
 
-        // Top: column indices + score/roads on right
+        // Top box with column indices and score info
         HBox topBox = new HBox();
         topBox.setSpacing(10);
         topBox.setAlignment(Pos.CENTER_LEFT);
@@ -65,7 +65,7 @@ public class FXView extends View {
         topBox.getChildren().addAll(colIndices, spacer, scoreBox);
         root.setTop(topBox);
 
-        // Center: grid
+        // Center grid
         gridPane = new GridPane();
         gridPane.setGridLinesVisible(true);
 
@@ -83,7 +83,14 @@ public class FXView extends View {
                 updateCellButton(btn, EMPTYCELL);
 
                 int finalPos = pos;
-                btn.setOnAction(e -> gameController.addRoad(finalPos));
+                btn.setOnAction(e -> {
+                    Building currentBuilding = gameController.getGameMap().getBuildingAt(finalPos);
+                    if (currentBuilding instanceof Road) {
+                        gameController.removeRoad(finalPos);
+                    } else {
+                        gameController.addRoad(finalPos);
+                    }
+                });
 
                 cellButtons.put(pos, btn);
                 gridPane.add(btn, c + 1, r + 1);
@@ -92,8 +99,8 @@ public class FXView extends View {
 
         root.setCenter(gridPane);
 
-        // Bottom status
-        statusLabel = new Label("Click a cell to place a road.");
+        // Bottom status label
+        statusLabel = new Label("Click a cell to place/remove a road.");
         root.setBottom(statusLabel);
         BorderPane.setAlignment(statusLabel, Pos.CENTER);
 
@@ -117,10 +124,10 @@ public class FXView extends View {
                 }
             }
 
-            // Update score and number of roads
             scoreLabel.setText("Score: " + game.score);
-            roadsLabel.setText("Roads: " + game.numOfRoads); // Update numOfRoads label
+            roadsLabel.setText("Roads: " + game.numOfRoads);
         });
+
         if (game.state == State.END) {
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);

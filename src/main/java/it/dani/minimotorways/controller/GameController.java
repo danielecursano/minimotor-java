@@ -39,8 +39,14 @@ public class GameController {
             while (true) {
                 try {
                     RandomGenerator.Result gen = RandomGenerator.generateRandomPositionAndColor();
-                    addDestination(gen.start, gen.color);
-                    addHouse(gen.end, HouseType.HOUSE, gen.color);
+                    boolean response = false;
+                    while (!response) {
+                        response = addDestination(gen.start, gen.color);
+                    }
+                    response = false;
+                    while (!response) {
+                        response = addHouse(gen.end, HouseType.HOUSE, gen.color);
+                    }
                     this.numOfRoads += 10;
                     updateGame(State.PLAY);
                     sleep(20_000);
@@ -59,12 +65,23 @@ public class GameController {
         }
     }
 
-    private void addDestination(int i, Color color) {
-        gameMap.addBuilding(i, new Destination(color, i));
+    private boolean addDestination(int i, Color color) {
+        return gameMap.addBuilding(i, new Destination(color, i));
     }
 
-    private void addHouse(int i, HouseType houseType, Color color) {
-        gameMap.addHouse(i, houseType, color);
+    private boolean addHouse(int i, HouseType houseType, Color color) {
+        return gameMap.addHouse(i, houseType, color);
+    }
+
+    public GameMap getGameMap() {
+        return gameMap;
+    }
+
+    public void removeRoad(int i) {
+        if (gameMap.removeRoad(i)) {
+            updateGame(State.PLAY);
+            numOfRoads++;
+        }
     }
 
     public void updateGame(State state) {

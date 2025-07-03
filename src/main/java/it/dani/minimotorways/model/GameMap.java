@@ -82,8 +82,25 @@ public class GameMap {
         return (!buildings.containsKey(pos) || buildings.get(pos) instanceof EmptyCell)&& isPositionValid(pos);
     }
 
+    private boolean canRemoveRoad(int x) {
+        Building b = getBuildingAt(x);
+        if (b instanceof Road) {
+            Road road = (Road) b;
+            return road.isFree();
+        }
+        return false;
+    }
+
+    public boolean removeRoad(int x) {
+        if (canRemoveRoad(x)) {
+            buildings.put(x, EMPTY_CELL);
+            return true;
+        }
+        return false;
+    }
+
     public boolean addBuilding(int i, Building building) {
-        if (canBuild(i)) {
+        if (canBuild(i) || canRemoveRoad(i)) {
             buildings.put(i, building);
             logger.info(String.format("[GAME] add building %s at %d", building.getClass(), i));
             return true;
