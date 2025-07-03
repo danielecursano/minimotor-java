@@ -1,5 +1,6 @@
 package it.dani.minimotorways.controller;
 
+import it.dani.minimotorways.model.Car;
 import it.dani.minimotorways.model.Color;
 import it.dani.minimotorways.model.GameMap;
 import it.dani.minimotorways.model.building.*;
@@ -23,6 +24,12 @@ public class GameController {
                     sleep(100);
                     gameMap.moveCar();
                     updateGame(State.PLAY);
+                    for (Car car : gameMap.getCars().values()) {
+                        if (car.isExpired()) {
+                            updateGame(State.END);
+                            return;
+                        }
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

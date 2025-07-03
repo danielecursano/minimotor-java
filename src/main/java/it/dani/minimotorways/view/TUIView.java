@@ -1,6 +1,7 @@
 package it.dani.minimotorways.view;
 
 import it.dani.minimotorways.controller.GameState;
+import it.dani.minimotorways.controller.State;
 import it.dani.minimotorways.model.GameMap;
 import it.dani.minimotorways.model.building.Building;
 import it.dani.minimotorways.model.building.EmptyCell;
@@ -25,22 +26,35 @@ public class TUIView extends View {
     @Override
     public void updateView(GameState game) {
         clearConsole();
-
-        System.out.print("    "); // spacing for row index
-        for (int col = 0; col < GameMap.getCols(); col++) {
-            System.out.printf("%d ", col);
+        switch (game.state) {
+            case PLAY -> renderGame(game);
+            case END -> renderEnd(game);
         }
-        System.out.println();
+    }
 
-        for (int i = 0; i < GameMap.getRows(); i++) {
-
-            System.out.printf("%2d |", i); // row label
-
-            for (int j = 0; j < GameMap.getCols(); j++) {
-                System.out.print(game.buildings.computeIfAbsent(i*GameMap.getRows()+j, key -> EMPTYCELL));
+    private void renderGame(GameState game) {
+        if (game.state == State.PLAY) {
+            System.out.print("    "); // spacing for row index
+            for (int col = 0; col < GameMap.getCols(); col++) {
+                System.out.printf("%d ", col);
             }
-            System.out.print("\n");
+            System.out.println();
+
+            for (int i = 0; i < GameMap.getRows(); i++) {
+
+                System.out.printf("%2d |", i); // row label
+
+                for (int j = 0; j < GameMap.getCols(); j++) {
+                    System.out.print(game.buildings.computeIfAbsent(i * GameMap.getRows() + j, key -> EMPTYCELL));
+                }
+                System.out.print("\n");
+            }
         }
+    }
+
+    private void renderEnd(GameState game) {
+        System.out.println("The game is finished. Final score: " + game.score);
+        System.exit(0);
     }
 
     @Override

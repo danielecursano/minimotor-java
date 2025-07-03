@@ -1,6 +1,7 @@
 package it.dani.minimotorways.view;
 
 import it.dani.minimotorways.controller.GameState;
+import it.dani.minimotorways.controller.State;
 import it.dani.minimotorways.model.GameMap;
 import it.dani.minimotorways.model.Car;
 import it.dani.minimotorways.model.Color;
@@ -8,6 +9,7 @@ import it.dani.minimotorways.model.building.*;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
@@ -119,6 +121,17 @@ public class FXView extends View {
             scoreLabel.setText("Score: " + game.score);
             roadsLabel.setText("Roads: " + game.numOfRoads); // Update numOfRoads label
         });
+        if (game.state == State.END) {
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Game Over");
+                alert.setHeaderText(null);
+                alert.setContentText("The game is finished. Final score: " + game.score);
+                alert.showAndWait();
+                Platform.exit();
+                System.exit(0);
+            });
+        }
     }
 
     @Override
