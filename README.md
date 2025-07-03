@@ -11,11 +11,13 @@ This project is an attempt to recreate the game **Mini Motorways** by Dinosaur P
 
 ### TODO
 
+- [ ] Fix concurrent memory access and edit
 - [ ] Implement levels to progressively generate new buildings and increase difficulty
-- [ ] Fix issue where new buildings stop spawning after several rounds
+- [x] Fix issue where new buildings stop spawning after several rounds
 - [ ] Improve the GUI aesthetics and layout
 - [ ] Refactor for cleaner, more maintainable code
-
+- [ ] Add docs
+- [ ] Change color of car when is not moving
 ### Notes
 
 This project is for educational and non-commercial purposes only and is **not affiliated with or endorsed by** Dinosaur Polo Club.

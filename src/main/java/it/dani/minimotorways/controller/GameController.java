@@ -50,7 +50,7 @@ public class GameController {
                     this.numOfRoads += 10;
                     updateGame(State.PLAY);
                     sleep(20_000);
-                } catch (InterruptedException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

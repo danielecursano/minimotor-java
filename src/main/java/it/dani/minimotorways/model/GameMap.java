@@ -110,12 +110,12 @@ public class GameMap {
     }
 
     public boolean addHouse(int i, HouseType house, Color color) {
-        if (!canBuild(i)) return false;
-        switch (house) {
+        if (!canBuild(i) && !canRemoveRoad(i)) return false;
+        boolean success = switch (house) {
             case HOUSE -> addBuilding(i, new House(color, this, i));
             case SKYSCRAPER -> addBuilding(i, new SkyScraper(color, this, i));
-        }
-        return true;
+        };
+        return success;
     }
 
     public boolean addCar(int i, Color carColor) {
