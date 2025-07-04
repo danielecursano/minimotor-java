@@ -11,6 +11,8 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class GameMap {
     private static final int ROWS = 20;
@@ -186,6 +188,12 @@ public class GameMap {
 
         // Add moved cars to map with updated positions after iteration
         cars.putAll(movedCars);
+    }
+
+    public Set<Integer> freeSpots() {
+        Set<Integer> result =  IntStream.range(0, ROWS*COLS).boxed().collect(Collectors.toSet());
+        result.removeAll(buildings.keySet());
+        return result;
     }
 
 }

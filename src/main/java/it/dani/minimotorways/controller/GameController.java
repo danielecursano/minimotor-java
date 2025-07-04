@@ -7,6 +7,8 @@ import it.dani.minimotorways.model.building.*;
 import it.dani.minimotorways.view.FXView;
 import it.dani.minimotorways.view.View;
 
+import java.util.List;
+
 import static java.lang.Thread.sleep;
 
 public class GameController {
@@ -38,17 +40,7 @@ public class GameController {
         new Thread(() -> {
             while (true) {
                 try {
-                    RandomGenerator.Result gen = RandomGenerator.generateRandomPositionAndColor();
-                    boolean response = false;
-                    while (!response) {
-                        response = addDestination(gen.start, gen.color);
-                    }
-                    response = false;
-                    while (!response) {
-                        if (gen.houseType == HouseType.SKYSCRAPER)
-                            System.out.println("Skyscraper");
-                        response = addHouse(gen.end, gen.houseType, gen.color);
-                    }
+                    new Level(List.of(HouseType.HOUSE)).generate(gameMap);
                     this.numOfRoads += 10;
                     updateGame(State.PLAY);
                     sleep(20_000);

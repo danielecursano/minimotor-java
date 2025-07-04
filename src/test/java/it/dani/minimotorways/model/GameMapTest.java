@@ -21,4 +21,9 @@ class GameMapTest {
         sleep(6000);
     }
 
+    @Test
+    void freeSpots() {
+        GameMap gameMap = new GameMap();
+        System.out.println(gameMap.freeSpots());
+    }
 }
