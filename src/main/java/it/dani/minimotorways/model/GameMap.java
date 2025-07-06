@@ -24,6 +24,8 @@ public class GameMap {
     private final Map<Integer, Car> cars = new HashMap<>();
     private int score = 0;
 
+    private final Object carLock = new Object();
+
     private static final Logger logger = Logger.getLogger(GameMap.class.getName());
     static {
         try {
@@ -121,73 +123,77 @@ public class GameMap {
     }
 
     public boolean addCar(int i, Color carColor) {
-        Set<Road> roads = new RoadVisitor(i, this).getRoads();
-        for (Road road : roads) {
-            Car newCar = new Car(carColor);
-            road.setCar(newCar);
-            logger.info("[GAME] add car at road " + i);
-            cars.put(road.getPos(), newCar);
-            return true;
+        synchronized (carLock) {
+            Set<Road> roads = new RoadVisitor(i, this).getRoads();
+            for (Road road : roads) {
+                Car newCar = new Car(carColor);
+                road.setCar(newCar);
+                logger.info("[GAME] add car at road " + i);
+                cars.put(road.getPos(), newCar);
+                return true;
+            }
+            logger.warning("[GAME] failed adding car at road " + i);
+            return false;
         }
-        logger.warning("[GAME] failed adding car at road " + i);
-        return false;
     }
 
     public void moveCar() {
-        PathVisitor pathVisitor = new PathVisitor();
-        for (int i = 0; i < ROWS * COLS; i++) {
-            getBuildingAt(i).accept(pathVisitor);
-        }
+        synchronized (carLock) {
+            PathVisitor pathVisitor = new PathVisitor();
+            for (int i = 0; i < ROWS * COLS; i++) {
+                getBuildingAt(i).accept(pathVisitor);
+            }
 
-        Iterator<Map.Entry<Integer, Car>> iterator = cars.entrySet().iterator();
-        Map<Integer, Car> movedCars = new HashMap<>(); // To store cars that moved to new positions
+            Iterator<Map.Entry<Integer, Car>> iterator = cars.entrySet().iterator();
+            Map<Integer, Car> movedCars = new HashMap<>(); // To store cars that moved to new positions
 
-        while (iterator.hasNext()) {
-            Map.Entry<Integer, Car> entry = iterator.next();
-            int currentPos = entry.getKey();
-            Car car = entry.getValue();
+            while (iterator.hasNext()) {
+                Map.Entry<Integer, Car> entry = iterator.next();
+                int currentPos = entry.getKey();
+                Car car = entry.getValue();
 
-            int nextStep = pathVisitor.getPath(currentPos, car.getColor());
-            if (nextStep != -1) {
-                Building nextBuilding = getBuildingAt(nextStep);
+                int nextStep = pathVisitor.getPath(currentPos, car.getColor());
+                if (nextStep != -1) {
+                    Building nextBuilding = getBuildingAt(nextStep);
 
-                if (nextBuilding instanceof Road) {
-                    Road nextRoad = (Road) nextBuilding;
-                    Road oldRoad = (Road) getBuildingAt(currentPos);
+                    if (nextBuilding instanceof Road) {
+                        Road nextRoad = (Road) nextBuilding;
+                        Road oldRoad = (Road) getBuildingAt(currentPos);
 
-                    // Move car to next road
-                    nextRoad.setCar(car);
-                    oldRoad.free();
+                        // Move car to next road
+                        nextRoad.setCar(car);
+                        oldRoad.free();
 
-                    // Update matrix in pathVisitor
-                    pathVisitor.setOne(currentPos);  // Old road now free
-                    pathVisitor.setZero(nextStep);   // New road now occupied
+                        // Update matrix in pathVisitor
+                        pathVisitor.setOne(currentPos);  // Old road now free
+                        pathVisitor.setZero(nextStep);   // New road now occupied
 
-                    // Mark for position update after iteration
-                    movedCars.put(nextStep, car);
+                        // Mark for position update after iteration
+                        movedCars.put(nextStep, car);
 
-                    // Remove old entry after iteration, do not remove here to avoid concurrent modification
-                    iterator.remove();
+                        // Remove old entry after iteration, do not remove here to avoid concurrent modification
+                        iterator.remove();
 
-                } else if (nextBuilding instanceof Destination) {
-                    // Car reached destination
-                    score += 1;
+                    } else if (nextBuilding instanceof Destination) {
+                        // Car reached destination
+                        score += 1;
 
-                    // Free old road
-                    Road oldRoad = (Road) getBuildingAt(currentPos);
-                    oldRoad.free();
+                        // Free old road
+                        Road oldRoad = (Road) getBuildingAt(currentPos);
+                        oldRoad.free();
 
-                    // Update matrix in pathVisitor
-                    pathVisitor.setOne(currentPos);
+                        // Update matrix in pathVisitor
+                        pathVisitor.setOne(currentPos);
 
-                    // Remove car safely while iterating
-                    iterator.remove();
+                        // Remove car safely while iterating
+                        iterator.remove();
+                    }
                 }
             }
-        }
 
-        // Add moved cars to map with updated positions after iteration
-        cars.putAll(movedCars);
+            // Add moved cars to map with updated positions after iteration
+            cars.putAll(movedCars);
+        }
     }
 
     public Set<Integer> freeSpots() {

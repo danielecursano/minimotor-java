@@ -38,16 +38,7 @@ public class GameController {
             }
         }).start();
         new Thread(() -> {
-            while (true) {
-                try {
-                    new Level(List.of(HouseType.HOUSE)).generate(gameMap);
-                    this.numOfRoads += 10;
-                    updateGame(State.PLAY);
-                    sleep(20_000);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+            new LevelGenerator(this).start();
         }).start();
     }
 
@@ -57,6 +48,10 @@ public class GameController {
             updateGame(State.PLAY);
             numOfRoads--;
         }
+    }
+
+    public void incrementRoads(int delta) {
+        this.numOfRoads += delta;
     }
 
     private boolean addDestination(int i, Color color) {
@@ -84,6 +79,10 @@ public class GameController {
         } else {
             view.updateView(new GameState(gameMap.getBuildings(), gameMap.getCars(), state, gameMap.getScore(), numOfRoads));
         }
+    }
+
+    public int getScore() {
+        return gameMap.getScore();
     }
 
 }
