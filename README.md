@@ -1,7 +1,7 @@
 ## Mini Motorways (Java)
-
-This project is an attempt to recreate the game **Mini Motorways** by Dinosaur Polo Club, implemented in Java.
-
+This project is an attempt to recreate the game Mini Motorways by Dinosaur Polo Club, implemented in Java.
+Connect houses to their corresponding color buildings through an efficient road network while avoiding traffic congestion.
+If a car fails to reach a free destination in time, you lose.
 ### Features
 
 - Basic simulation of roads, houses, and destinations
@@ -11,8 +11,8 @@ This project is an attempt to recreate the game **Mini Motorways** by Dinosaur P
 
 ### TODO
 
-- [ ] Fix concurrent memory access and edit
-- [ ] Implement levels to progressively generate new buildings and increase difficulty
+- [x] Fix concurrent memory access and edit
+- [x] Implement levels to progressively generate new buildings and increase difficulty
 - [x] Fix issue where new buildings stop spawning after several rounds
 - [ ] Improve the GUI aesthetics and layout
 - [ ] Refactor for cleaner, more maintainable code

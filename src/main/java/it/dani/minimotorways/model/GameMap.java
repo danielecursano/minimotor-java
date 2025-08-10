@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class GameMap {
-    private static final int ROWS = 20;
-    private static final int COLS = 20;
+    private static final int ROWS = 19;
+    private static final int COLS = 30;
     private static final int[] DIRS = {1, -1, COLS, -COLS};
     private static final EmptyCell EMPTY_CELL = new EmptyCell();
 
